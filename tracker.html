@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tracker</title>
+    <!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<style>
+    *
+    {
+        margin:0px;
+        padding: 0px;
+        
+
+    }
+    .main
+    {
+        width:90%;
+        margin:auto;
+        padding:20px
+
+    }
+    h2{
+        width:100%;
+        margin-top:20px;
+        text-align: center;
+        justify-content: center;
+        padding: 20px;
+        color:greenyellow
+
+    }
+    h3
+    {
+        text-align : center;
+    }
+    td:hover
+    {
+        background-color: #454545;
+    }
+    
+</style>
+</head>
+<body id="universe">
+    <h2>Shortest Path Simulator</h2>
+    <marquee><h3 style="padding:2px;margin:2px;font-size:17px;color:blueviolet"><span style="color:black">Designed & Developed by:</span> Nag Ashish S V</h3></marquee>
+    
+    <div class="main">
+       
+        <div class="row">
+            <div class="col-md-3 col-sm-12" style="border:1px solid black;padding:10px">
+                <h3 style="color:blueviolet">Dashboard</h3>
+                <br>
+                <label>
+                    No of Rows:
+                </label>
+                <input type="number" id="rows"  onkeyup="draw()">
+                <br><br>
+                <label>
+                    No of Colns:
+                </label>
+                <input type="number" id="cols"  onkeyup="draw()">
+                <br><br>
+                <p>Change No of rows and cols to draw table and (go beyond 10 rows 10 cols at your own risk)</p>
+                
+                <h4>Place origin :</h4>
+                <label> Enter starting cell: </label>
+                <input type="number" id="start" style="width:50px;margin-left: 23px;">
+                <br>
+                <label> Enter destination cell: </label>
+                <input type="number" id="end" style="width:50px">
+                <br>
+                <button onclick="place()" style="width: 50px;" id="mark">Mark</button> (Refresh to change coords)
+                <br>
+                <h4>Generate blocks:</h4>
+                <button onclick="blocks()" style="width: 150px;" id="mark">Generate Blocks</button>
+                <br>
+                <h4>Generate Shortest path:</h4>
+                <button onclick="map()" style="width: 170px;" id="mark">Generate Shortest path</button>
+                
+            </div>
+            
+            
+                
+                <div id="canvas" class="col-md-6 col-sm-12" style="border:1px solid green;padding:10px">
+                    <h3 style="color:blueviolet">Matrix</h3>
+                </div>
+                <div class="col-md-3 col-sm-12" style="border:1px solid black;padding:10px">
+                    <h3 style="color:blueviolet">Statistics</h3>
+                    <br>
+                    <h4><b>Shortest Length =</b><span id="lnt">0</span> </h4>
+                    <h4><b>Path=</b>  <span id="pth1"></span></h4>
+                    <h4><b>Start Time =</b><span id="start_tm"></span></h4>
+                    <h4><b>End Time =</b><span id="end_tm"></span></h4>
+                </div>
+                
+            
+            
+        </div>
+    </div>
+</body>
+
+<script>
+    var r,c,flag_start=0,flag_end=0,cnt,st,en,flag_block=0,visited=[];
+    var ans1=new Array();
+    var main_ans=[]
+    draw=()=>{
+        
+         r=parseInt(document.getElementById("rows").value);
+         c=parseInt(document.getElementById("cols").value);
+         flag_start=0;
+         flag_end=0;
+         flag_block=0;
+        //console.log(r)
+        //console.log(c)
+        ans="<table style='border-collapse: collapse;width:100%;margin:auto' id='tbl'>"
+        cnt=1;
+        for(var i=0;i<r;i++)
+        {
+            temp="<tr>"
+            for(var j=0;j<c;j++)
+            {
+                temp=temp+"<td id='"+cnt+"' style='border: 1px solid #333; width:50px;height:50px'>"+cnt+"</td>"
+                cnt++;
+            }
+            ans=ans+temp+"</tr>"
+        }
+        ans=ans+"</table>"
+        document.getElementById("canvas").innerHTML=ans;
+       
+        
+    }
+    place=()=>{
+
+        st=parseInt(document.getElementById("start").value);
+        en=parseInt(document.getElementById("end").value);
+        
+        if(r>0 && c>0 && flag_end==0 && flag_start==0)
+        {
+            //let calc_r=(st-1)*c+en;
+            //console.log(""+calc_r)
+            
+            document.getElementById(""+st).style.backgroundColor="red";
+            document.getElementById(""+en).style.backgroundColor="green";
+            flag_start=1;
+            flag_end=1;
+        }
+    }
+    blocks=()=>{
+        var threshold=parseInt(r*c/3)+1
+       if(flag_block==0){
+        for(var i=0;i<threshold;i++){
+            var no=Math.floor(Math.random() *(r*c-1)+1)
+            if(no!=st && no!=en){
+            document.getElementById(""+no).style.backgroundColor="black";
+
+            }
+        }
+        flag_block=1
+       }
+    }
+    paint=(bllk)=>{
+        console.log(typeof(bllk))
+        console.log(bllk)
+        document.getElementById(bllk).style.backgroundColor="yellow"
+    }
+    var tmms=1;
+    yty=(indx)=>{
+            if(indx==main_ans.length)
+            {
+                setInterval(() => {
+                    if(tmms%2==0){
+                        document.getElementById("universe").style.backgroundColor="#656565"
+                        tmms++;
+                    }
+                    else{
+                        document.getElementById("universe").style.backgroundColor="white";
+                        tmms++;
+                    }
+                }, 500);
+                //document.getElementById("universe").style.backgroundColor="orange"
+            }
+            document.getElementById(main_ans[indx]).style.backgroundColor="yellow"
+            if(indx!=main_ans.length){
+                
+                setTimeout(()=>{document.getElementById("end_tm").innerHTML=new Date().toLocaleTimeString();yty(indx+1);},1000)
+            }
+            
+        }
+    map=()=>{
+        document.getElementById("start_tm").innerHTML=new Date().toLocaleString()
+        visited[0]=1
+        for(var i=1;i<=(r*c);i++)
+        {
+            visited[i]=0;
+        }
+        for(var i=1;i<=(r*c);i++)
+        {
+            console.log(visited[i])
+        }
+        //func(st)
+        
+        cnt=1
+        bt(st,cnt,[]);
+        console.log("finally",main_ans);
+        document.getElementById("pth1").innerHTML=main_ans;
+        setTimeout(()=>{yty(0);},1000)
+        document.getElementById("lnt").innerHTML=main_ans.length;
+        
+        //console.log(main_ans[xx]);
+    
+    }
+    
+    var maxi=9999999;
+    bt=(curr1,cnt,store)=>{
+        console.log(curr1);
+        //y1=curr1%c;
+        //x1=((curr1-y1)/c)+1;
+        if(curr1<1||curr1>(r*c)||visited[curr1]==1||document.getElementById(""+curr1).style.backgroundColor=="black")
+        {
+            
+            return;
+        }
+        if(document.getElementById(""+curr1).style.backgroundColor=="green")
+        {
+            if(cnt<=maxi)
+            {
+                maxi=cnt;
+                //main_ans=store;
+                main_ans=[]
+                for(var ty=0;ty<store.length;ty++)
+                {
+                    main_ans[ty]=store[ty];
+                }
+                main_ans[ty]=curr1;
+               // console.log(main_ans);
+                //console.log("I visited you",cnt);
+               // console.log("length=",store.length);
+                
+            }
+            return;
+        }
+        visited[curr1]=1;
+        store.push(curr1);
+        cnt=cnt+1;
+        document.getElementById(""+curr1).style.backgroundColor="blue";
+        
+        if(curr1%c!=0 && visited[curr1+1]!=1 && curr1+1>=1 && curr1+1<=(r*c) && document.getElementById(""+(curr1+1)).style.backgroundColor!="black")
+            bt(curr1+1,cnt,store);
+        if(visited[curr1+c]!=1 && curr1+c>=1 && curr1+c<=(r*c)  && document.getElementById(""+(curr1+c)).style.backgroundColor!="black")
+            bt(curr1+c,cnt,store);
+        
+        if(curr1%c!=1 && visited[curr1-1]!=1 && curr1-1>=1 && curr1-1<=(r*c) && document.getElementById(""+(curr1-1)).style.backgroundColor!="black")
+            bt(curr1-1,cnt,store);
+            
+        if(visited[curr1-c]!=1 && curr1-c>=1 && curr1-c<=(r*c )  && document.getElementById(""+(curr1-c)).style.backgroundColor!="black")
+            bt(curr1-c,cnt,store);       
+    
+        cnt=cnt-1;
+        store.pop();
+        visited[curr1]=0;
+
+    }
+    
+</script>
+
+</html>
